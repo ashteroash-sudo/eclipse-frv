@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a0809">
+<title>Éclipse — F. Ruiz Verde</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500&family=Caveat:wght@400;600&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+:root{
+  --fond:#0a0809; --texte:#e9e1dc; --doux:#9d9192; --or:#c9a55c; --sang:#9e1b2f;
+  --lin:#cbb894; --lin2:#b9a37a; --bois:#5b3d24; --bois2:#3e2916; --papier:#efe3c6; --encre:#2b2018;
+  --cote:min(92vw, calc(100vh - 210px), 720px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--fond);color:var(--texte);font:15px/1.45 "Cormorant Garamond",Georgia,serif}
+body{background:radial-gradient(ellipse 70% 55% at 50% 38%,#2a2224 0%,#141012 55%,var(--fond) 100%);min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden}
+header{text-align:center;padding:calc(14px + env(safe-area-inset-top)) 16px 6px}
+header h1{margin:0;font-size:26px;letter-spacing:.06em;font-weight:700}
+header p{margin:2px 0 0;color:var(--doux);font-style:italic;font-size:16px}
+
+/* scène */
+.scene{width:var(--cote);height:var(--cote);perspective:1800px;margin:10px auto 0;flex:0 0 auto}
+.carte{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform 1s cubic-bezier(.4,.1,.2,1)}
+.carte.retourne{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 30px 60px rgba(0,0,0,.65),0 0 0 1px rgba(0,0,0,.4)}
+.dos{transform:rotateY(180deg)}
+
+/* face : cadre + portrait + couche à gratter */
+.face img.cadre{position:absolute;inset:0;width:100%;height:100%;display:block;user-select:none;-webkit-user-drag:none}
+.toile{position:absolute;left:6.12%;top:6.12%;width:87.63%;height:87.76%;overflow:hidden}
+.toile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;user-select:none;-webkit-user-drag:none}
+.toile canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair}
+.toile canvas.repos{touch-action:auto;cursor:default}
+
+/* dos */
+.dos{background:linear-gradient(135deg,var(--bois) 0%,var(--bois2) 100%);border-radius:2px}
+.dos::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(0,0,0,.08) 0 2px,transparent 2px 9px);pointer-events:none}
+.lin{position:absolute;left:6.12%;top:6.12%;width:87.63%;height:87.76%;
+  background-color:var(--lin);
+  background-image:repeating-linear-gradient(0deg,rgba(90,70,40,.12) 0 1px,transparent 1px 3px),repeating-linear-gradient(90deg,rgba(90,70,40,.12) 0 1px,transparent 1px 3px),radial-gradient(ellipse at 30% 40%,rgba(255,255,255,.12),transparent 60%),radial-gradient(ellipse at 70% 80%,rgba(80,50,20,.25),transparent 55%);
+  box-shadow:inset 0 0 40px rgba(60,35,10,.55)}
+.chassis{position:absolute;background:linear-gradient(180deg,#a7804f,#8a6438);box-shadow:0 3px 6px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.2)}
+.chassis::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(60,35,10,.15) 0 1px,transparent 1px 7px)}
+.ch-h{left:6%;right:6%;height:7%}
+.ch-v{top:6%;bottom:6%;width:7%}
+.ch-mid-h{top:46.5%}
+.ch-mid-v{left:46.5%}
+.etiquette{position:absolute;background:var(--papier);color:var(--encre);font-family:"Special Elite",monospace;box-shadow:0 2px 5px rgba(0,0,0,.35);padding:2.2% 2.6%;line-height:1.35}
+.e1{left:12%;top:15%;width:30%;font-size:clamp(8px,1.55vw,12px);transform:rotate(-2deg)}
+.e1 b{display:block;font-size:1.15em;letter-spacing:.06em;border-bottom:1px solid var(--encre);margin-bottom:4%}
+.e2{right:11%;top:60%;width:24%;font-size:clamp(7px,1.3vw,10.5px);transform:rotate(3deg);background:#f4f1e8;border:2px solid #b3261e;color:#b3261e;text-align:center;padding:1.6%}
+.craie{position:absolute;left:58%;top:16%;font-family:"Caveat",cursive;color:rgba(255,255,255,.75);font-size:clamp(14px,3vw,24px);transform:rotate(-6deg)}
+.crayon{position:absolute;left:14%;top:63%;font-family:"Caveat",cursive;color:#3a2a1a;font-size:clamp(12px,2.4vw,19px);transform:rotate(1.5deg);opacity:.85}
+
+/* le faux fond : planchette clouée sur la traverse du bas */
+.planchette{position:absolute;left:21%;width:42%;bottom:6.4%;height:9%;background:linear-gradient(180deg,#7a5634,#5d3f22);box-shadow:0 2px 4px rgba(0,0,0,.5);
+  border-radius:2px;cursor:grab;touch-action:none;transform-origin:8% 50%;transition:transform .35s ease, opacity .5s}
+.planchette::before,.planchette::after{content:"";position:absolute;top:50%;width:3.2%;aspect-ratio:1;margin-top:-1.6%;border-radius:50%;background:radial-gradient(circle at 35% 35%,#c9c2b4,#5b554b)}
+.planchette::before{left:4%}
+.planchette::after{right:4%}
+.planchette.secoue{animation:secoue .35s}
+@keyframes secoue{25%{transform:rotate(-2deg)}75%{transform:rotate(2deg)}}
+.planchette.ouverte{transform:rotate(-58deg) translateX(-6%);cursor:default}
+.cache-trou{position:absolute;left:23%;width:38%;bottom:7.2%;height:7.4%;background:#1b120a;box-shadow:inset 0 4px 10px #000;border-radius:2px;display:flex;align-items:center;justify-content:center}
+.rouleau{width:70%;height:52%;border-radius:40px;background:linear-gradient(180deg,#f3e6c4,#d6c39a 55%,#b8a274);box-shadow:0 2px 6px rgba(0,0,0,.6);position:relative;cursor:pointer;opacity:0;transition:opacity .6s .3s}
+.rouleau::after{content:"";position:absolute;left:46%;top:-8%;bottom:-8%;width:8%;background:#7a1622;border-radius:2px}
+.ouverte ~ .cache-trou .rouleau, .cache-trou.visible .rouleau{opacity:1}
+
+/* barre d'outils */
+.outils{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:14px 16px 6px}
+.outils button{font:600 15px "Cormorant Garamond",serif;letter-spacing:.03em;border:1px solid #4a3b3d;background:#1d1617;color:var(--texte);border-radius:22px;padding:9px 16px;cursor:pointer}
+.outils button.on{background:var(--sang);border-color:var(--sang)}
+.indice{color:var(--doux);font-style:italic;text-align:center;padding:0 16px 20px;min-height:24px;max-width:560px}
+
+/* lecture du rouleau */
+#lecture{position:fixed;inset:0;z-index:30;background:rgba(5,3,4,.82);display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:24px 14px}
+#lecture.cache{display:none}
+.feuillet{position:relative;max-width:620px;width:100%;margin:auto;background:var(--papier);color:var(--encre);padding:34px 30px 30px;font-family:"Caveat",cursive;font-size:clamp(19px,4.6vw,23px);line-height:1.38;
+  box-shadow:0 20px 50px rgba(0,0,0,.6);background-image:radial-gradient(ellipse at 15% 10%,rgba(120,80,30,.18),transparent 45%),radial-gradient(ellipse at 90% 95%,rgba(120,80,30,.22),transparent 50%),radial-gradient(circle at 70% 30%,rgba(60,30,10,.12) 0 3%,transparent 3.5%)}
+.feuillet p{margin:0 0 .7em}
+.feuillet s{text-decoration-thickness:2px;opacity:.75}
+.feuillet .gros{font-size:1.25em;font-weight:600}
+.feuillet .tache{position:absolute;width:46px;height:38px;border-radius:50% 40% 55% 45%;background:rgba(40,20,10,.55);filter:blur(1px)}
+.feuillet .sig{text-align:right;font-size:1.3em;margin-top:.4em}
+.feuillet button{position:sticky;top:0;float:right;margin:-20px -16px 0 0;font:600 15px "Cormorant Garamond",serif;border:1px solid #9d8a6a;background:#e3d4b2;color:var(--encre);border-radius:20px;padding:6px 14px;cursor:pointer}
+.cache{display:none!important}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>« Éclipse »</h1>
+  <p>Huile sur toile — Francis Ruiz Verde</p>
+</header>
+
+<div class="scene">
+  <div class="carte" id="carte">
+    <!-- FACE -->
+    <div class="face avant">
+      <img class="cadre" src="img/eclipse.jpg" alt="Éclipse, F. Ruiz Verde" draggable="false">
+      <div class="toile">
+        <img src="img/portrait.jpg" alt="" draggable="false">
+        <canvas id="couche" class="repos"></canvas>
+      </div>
+    </div>
+    <!-- DOS -->
+    <div class="face dos" id="dos">
+      <div class="lin"></div>
+      <div class="chassis ch-h" style="top:6%"></div>
+      <div class="chassis ch-h" style="bottom:6%"></div>
+      <div class="chassis ch-v" style="left:6%"></div>
+      <div class="chassis ch-v" style="right:6%"></div>
+      <div class="chassis ch-h ch-mid-h"></div>
+      <div class="chassis ch-v ch-mid-v"></div>
+      <div class="etiquette e1"><b>RAVENSCOURT &amp; FILS</b>Chicago, Ill.<br>Inv. 1622<br>F. Ruiz Verde — « Éclipse »<br>Huile sur toile<br>Propriété de l'artiste</div>
+      <div class="etiquette e2">LAKESHORE FREIGHT<br>LSF-1622<br>FRAGILE · À PLAT</div>
+      <div class="craie">F.R.V.</div>
+      <div class="crayon">ne pas restaurer. jamais.</div>
+      <div class="cache-trou" id="trou"><div class="rouleau" id="rouleau" title="Un rouleau de papier"></div></div>
+      <div class="planchette" id="planchette" title="Une planchette clouée sur la traverse"></div>
+    </div>
+  </div>
+</div>
+
+<div class="outils">
+  <button id="b-gratter">🔪 Gratter la peinture</button>
+  <button id="b-retourner">↻ Retourner le tableau</button>
+</div>
+<div class="indice" id="indice">Une toile sans valeur, dit le manifeste. Pourtant quelqu'un l'a fait traverser l'État sous escorte.</div>
+
+<div id="lecture" class="cache">
+  <div class="feuillet">
+    <button id="b-fermer">Refermer</button>
+    <div class="tache" style="right:8%;top:22%"></div>
+    <p>… la nuit du 14 ? du 15 ? Je ne sais plus. La lune encore. Toujours la lune qui se ferme comme un œil.</p>
+    <p>Ils disent que les Anciens dorment. Ils ne dorment pas. Ils <span class="gros">attendent</span>. Je les entends se retourner sous la terre, sous la ville, dans les tuyaux, dans les murs.</p>
+    <p>La Géhenne n'est pas une fin. C'est un appel. <s>Personne ne répond</s> Quelqu'un répond déjà.</p>
+    <p>Les fous du Sabbat le savent mieux que nous. Ils chantent ce que nous refusons d'entendre. — Non. Ce n'est pas le Sabbat qui m'inquiète.</p>
+    <p class="gros">C'est lui.</p>
+    <p>L'un des nôtres. L'un des plus hauts. Il sourit à l'Élysée, il serre les mains qu'il faut. Je n'ai pas de preuve. J'ai des dates. J'ai des caisses qui ne pèsent pas ce qu'elles devraient peser.</p>
+    <p>Il était mielleux, avant. Mielleux et vain, il fallait le flatter pour qu'il écoute. Depuis l'été il est <span class="gros">agité</span>. Il ne finit plus ses phrases. Il ne se souvient pas de ce qu'il m'a dit la veille. L'autre soir il m'a appelé par un nom que je n'ai pas porté depuis cent ans.</p>
+    <p>Certains soirs je ne le reconnais plus. <s>Ce sont ses yeux</s> Ses yeux ne sont pas à lui.</p>
+    <p>J'ai voulu le peindre, pour me souvenir de son vrai visage. Le visage refuse. J'ai tout gratté.</p>
+    <p>Trois nuits de suite, le même rêve : un serpent qui avale la lune.</p>
+    <p>Si quelqu'un trouve ceci : ne vous fiez pas aux visages.</p>
+    <p class="sig">— F.</p>
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   Couche à gratter : la toile de l'éclipse, au-dessus du portrait
+   ===================================================================== */
+const SRC = 'img/eclipse.jpg';
+const ZONE = {x:47, y:47, w:673, h:674};   // intérieur du cadre dans eclipse.jpg (768 x 768)
+const CLE = 'eclipse-grattage-v1';
+// ?reset dans l'adresse : efface le grattage enregistré sur cet appareil
+if (new URLSearchParams(location.search).has('reset')) { try { localStorage.removeItem(CLE); } catch(e) {} }
+const couche = document.getElementById('couche');
+const ctx = couche.getContext('2d', {willReadFrequently:true});
+const indice = document.getElementById('indice');
+let source = new Image(), pret = false, gratter = false, dessine = false, dernier = null, compte = 0, annonce = false;
+
+function dimensionner(){
+  const r = couche.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.round(r.width * dpr), H = Math.round(r.height * dpr);
+  if (couche.width === W && couche.height === H) return;
+  const ancien = pret ? couche.toDataURL() : null;
+  couche.width = W; couche.height = H;
+  if (ancien){ const i = new Image(); i.onload = () => ctx.drawImage(i, 0, 0, W, H); i.src = ancien; }
+  else peindre();
+}
+function peindre(){
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.drawImage(source, ZONE.x, ZONE.y, ZONE.w, ZONE.h, 0, 0, couche.width, couche.height);
+  let sauve = null; try { sauve = localStorage.getItem(CLE); } catch(e) {}
+  if (sauve){ const i = new Image(); i.onload = () => { ctx.globalCompositeOperation = 'source-over'; ctx.clearRect(0,0,couche.width,couche.height); ctx.drawImage(i, 0, 0, couche.width, couche.height); }; i.src = sauve; }
+  pret = true;
+}
+source.onload = () => { dimensionner(); };
+source.src = SRC;
+window.addEventListener('resize', () => pret && dimensionner());
+
+function point(ev){ const r = couche.getBoundingClientRect(); return {x:(ev.clientX - r.left) * couche.width / r.width, y:(ev.clientY - r.top) * couche.height / r.height}; }
+function entaille(a, b){
+  // un coup de couteau à palette : un trait irrégulier + des éclats de peinture
+  const rayon = couche.width * 0.022;
+  ctx.globalCompositeOperation = 'destination-out';
+  const d = Math.hypot(b.x - a.x, b.y - a.y), pas = Math.max(1, Math.floor(d / (rayon * 0.35)));
+  for (let k = 0; k <= pas; k++){
+    const x = a.x + (b.x - a.x) * k / pas, y = a.y + (b.y - a.y) * k / pas;
+    for (let j = 0; j < 3; j++){
+      ctx.globalAlpha = 0.55 + Math.random() * 0.45;
+      ctx.beginPath();
+      ctx.ellipse(x + (Math.random() - .5) * rayon, y + (Math.random() - .5) * rayon, rayon * (0.35 + Math.random() * 0.7), rayon * (0.18 + Math.random() * 0.35), Math.random() * Math.PI, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+  ctx.globalAlpha = 1;
+}
+couche.addEventListener('pointerdown', ev => { if (!gratter || !pret) return; dessine = true; dernier = point(ev); couche.setPointerCapture(ev.pointerId); entaille(dernier, dernier); ev.preventDefault(); });
+couche.addEventListener('pointermove', ev => { if (!dessine) return; const p = point(ev); entaille(dernier, p); dernier = p; if (++compte % 25 === 0) verifier(); });
+const fin = () => { if (!dessine) return; dessine = false; verifier(); try { localStorage.setItem(CLE, couche.toDataURL('image/webp', 0.8)); } catch(e) {} };
+couche.addEventListener('pointerup', fin); couche.addEventListener('pointercancel', fin);
+
+function verifier(){
+  // proportion de peinture enlevée (échantillonnée)
+  const d = ctx.getImageData(0, 0, couche.width, couche.height).data;
+  let vide = 0, n = 0;
+  for (let i = 3; i < d.length; i += 4 * 97){ n++; if (d[i] < 60) vide++; }
+  const p = vide / n;
+  if (p > 0.04 && !annonce){ annonce = true; indice.textContent = 'Sous la nuit bleue, des couleurs plus chaudes. Une autre peinture, plus ancienne.'; }
+  if (p > 0.35) indice.textContent = 'Un double portrait, inachevé. La femme est intacte. Le visage de l\'homme a été arraché au couteau.';
+}
+
+/* =====================================================================
+   Outils
+   ===================================================================== */
+const bG = document.getElementById('b-gratter'), bR = document.getElementById('b-retourner'), carte = document.getElementById('carte');
+bG.onclick = () => {
+  if (carte.classList.contains('retourne')) retourner();
+  gratter = !gratter; bG.classList.toggle('on', gratter); couche.classList.toggle('repos', !gratter);
+  bG.textContent = gratter ? '✋ Arrêter de gratter' : '🔪 Gratter la peinture';
+  if (gratter && !annonce) indice.textContent = 'Passez le doigt (ou la souris) sur la toile pour gratter la peinture.';
+};
+function retourner(){
+  carte.classList.toggle('retourne');
+  const dos = carte.classList.contains('retourne');
+  bR.textContent = dos ? '↻ Voir la face' : '↻ Retourner le tableau';
+  if (dos){ gratter = false; bG.classList.remove('on'); couche.classList.add('repos'); bG.textContent = '🔪 Gratter la peinture';
+    if (!ouverte) indice.textContent = 'Le dos du tableau. Le châssis, les étiquettes… et une planchette clouée sur la traverse du bas, qui n\'a rien à faire là.'; }
+}
+bR.onclick = retourner;
+
+/* =====================================================================
+   Le faux fond
+   ===================================================================== */
+const planchette = document.getElementById('planchette'), trou = document.getElementById('trou'), rouleau = document.getElementById('rouleau');
+let tentatives = 0, ouverte = false;
+const PHRASES = ['La planchette tient bien. Les clous sont neufs, plus récents que le châssis.', 'Elle bouge un peu… quelque chose est coincé derrière.', 'Un clou cède.'];
+planchette.addEventListener('click', () => {
+  if (ouverte) return;
+  tentatives++;
+  if (tentatives < 3){ indice.textContent = PHRASES[tentatives - 1]; planchette.classList.remove('secoue'); void planchette.offsetWidth; planchette.classList.add('secoue'); return; }
+  ouverte = true; indice.textContent = PHRASES[2] + ' Derrière, dans une cavité creusée dans la traverse : un rouleau de papier, noué d\'un fil rouge.';
+  planchette.classList.add('ouverte'); trou.classList.add('visible');
+});
+rouleau.addEventListener('click', () => { if (ouverte) document.getElementById('lecture').classList.remove('cache'); });
+document.getElementById('b-fermer').onclick = () => document.getElementById('lecture').classList.add('cache');
+document.getElementById('lecture').addEventListener('click', e => { if (e.target.id === 'lecture') e.currentTarget.classList.add('cache'); });
+</script>
+</body>
+</html>
