@@ -156,7 +156,7 @@ header p{margin:2px 0 0;color:var(--doux);font-style:italic;font-size:16px}
    ===================================================================== */
 const SRC = 'img/eclipse.jpg';
 const ZONE = {x:47, y:47, w:673, h:674};   // intérieur du cadre dans eclipse.jpg (768 x 768)
-const CLE = 'eclipse-grattage-v1';
+const CLE = 'eclipse-grattage-v2';
 // ?reset dans l'adresse : efface le grattage enregistré sur cet appareil
 if (new URLSearchParams(location.search).has('reset')) { try { localStorage.removeItem(CLE); } catch(e) {} }
 const couche = document.getElementById('couche');
@@ -247,8 +247,8 @@ planchette.addEventListener('click', () => {
   planchette.classList.add('ouverte'); trou.classList.add('visible');
 });
 /* Le grattage ne se débloque qu'après la lecture du rouleau (« J'ai tout gratté ») */
-const CLE_LU = 'eclipse-rouleau-lu';
-let lu = false; try { lu = localStorage.getItem(CLE_LU) === '1' || !!localStorage.getItem(CLE); } catch(e) {}
+const CLE_LU = 'eclipse-rouleau-lu-v2';
+let lu = false; try { lu = localStorage.getItem(CLE_LU) === '1'; } catch(e) {}
 if (new URLSearchParams(location.search).has('reset')) { lu = false; try { localStorage.removeItem(CLE_LU); } catch(e) {} }
 if (lu) bG.classList.remove('cache');
 rouleau.addEventListener('click', () => { if (ouverte) document.getElementById('lecture').classList.remove('cache'); });
