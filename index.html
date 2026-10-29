@@ -119,8 +119,8 @@ header p{margin:2px 0 0;color:var(--doux);font-style:italic;font-size:16px}
       <div class="etiquette e2">LAKESHORE FREIGHT<br>LSF-1622<br>FRAGILE · À PLAT</div>
       <div class="craie">F.R.V.</div>
       <div class="crayon">ne pas restaurer. jamais.</div>
-      <div class="cache-trou" id="trou"><div class="rouleau" id="rouleau" title="Un rouleau de papier"></div></div>
-      <div class="planchette" id="planchette" title="Une planchette clouée sur la traverse"></div>
+      <div class="cache-trou" id="trou"><div class="rouleau" id="rouleau"></div></div>
+      <div class="planchette" id="planchette"></div>
     </div>
   </div>
 </div>
@@ -129,7 +129,7 @@ header p{margin:2px 0 0;color:var(--doux);font-style:italic;font-size:16px}
   <button id="b-gratter" class="cache">🔪 Gratter la peinture</button>
   <button id="b-retourner">↻ Retourner le tableau</button>
 </div>
-<div class="indice" id="indice">Une toile sans valeur, dit le manifeste. Pourtant quelqu'un l'a fait traverser l'État sous escorte. Peut-être faut-il la regarder sous un autre angle.</div>
+<div class="indice" id="indice"></div>
 
 <div id="lecture" class="cache">
   <div class="feuillet">
@@ -213,8 +213,7 @@ function verifier(){
   let vide = 0, n = 0;
   for (let i = 3; i < d.length; i += 4 * 97){ n++; if (d[i] < 60) vide++; }
   const p = vide / n;
-  if (p > 0.04 && !annonce){ annonce = true; indice.textContent = 'Sous la nuit bleue, des couleurs plus chaudes. Une autre peinture, plus ancienne.'; }
-  if (p > 0.35) indice.textContent = 'Un double portrait, inachevé. La femme est intacte. Le visage de l\'homme a été arraché au couteau.';
+  // (aucun texte : à la MJ et aux jets de faire parler la toile)
 }
 
 /* =====================================================================
@@ -225,14 +224,13 @@ bG.onclick = () => {
   if (carte.classList.contains('retourne')) retourner();
   gratter = !gratter; bG.classList.toggle('on', gratter); couche.classList.toggle('repos', !gratter);
   bG.textContent = gratter ? '✋ Arrêter de gratter' : '🔪 Gratter la peinture';
-  if (gratter && !annonce) indice.textContent = 'Passez le doigt (ou la souris) sur la toile pour gratter la peinture.';
 };
 function retourner(){
   carte.classList.toggle('retourne');
   const dos = carte.classList.contains('retourne');
   bR.textContent = dos ? '↻ Voir la face' : '↻ Retourner le tableau';
   if (dos){ gratter = false; bG.classList.remove('on'); couche.classList.add('repos'); bG.textContent = '🔪 Gratter la peinture';
-    if (!ouverte) indice.textContent = 'Le dos du tableau. Le châssis, les étiquettes… et une planchette clouée sur la traverse du bas, qui n\'a rien à faire là.'; }
+  }
 }
 bR.onclick = retourner;
 
@@ -241,12 +239,11 @@ bR.onclick = retourner;
    ===================================================================== */
 const planchette = document.getElementById('planchette'), trou = document.getElementById('trou'), rouleau = document.getElementById('rouleau');
 let tentatives = 0, ouverte = false;
-const PHRASES = ['La planchette tient bien. Les clous sont neufs, plus récents que le châssis.', 'Elle bouge un peu… quelque chose est coincé derrière.', 'Un clou cède.'];
 planchette.addEventListener('click', () => {
   if (ouverte) return;
   tentatives++;
-  if (tentatives < 3){ indice.textContent = PHRASES[tentatives - 1]; planchette.classList.remove('secoue'); void planchette.offsetWidth; planchette.classList.add('secoue'); return; }
-  ouverte = true; indice.textContent = PHRASES[2] + ' Derrière, dans une cavité creusée dans la traverse : un rouleau de papier, noué d\'un fil rouge.';
+  if (tentatives < 3){ planchette.classList.remove('secoue'); void planchette.offsetWidth; planchette.classList.add('secoue'); return; }
+  ouverte = true;
   planchette.classList.add('ouverte'); trou.classList.add('visible');
 });
 /* Le grattage ne se débloque qu'après la lecture du rouleau (« J'ai tout gratté ») */
@@ -260,7 +257,6 @@ function fermerLecture(){
   if (!lu){
     lu = true; try { localStorage.setItem(CLE_LU, '1'); } catch(e) {}
     bG.classList.remove('cache');
-    indice.textContent = '« Le visage refuse. J\'ai tout gratté. » Et si, sous la nuit bleue, la peinture cachait autre chose ?';
   }
 }
 document.getElementById('b-fermer').onclick = fermerLecture;
