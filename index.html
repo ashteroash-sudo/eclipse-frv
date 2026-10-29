@@ -126,10 +126,10 @@ header p{margin:2px 0 0;color:var(--doux);font-style:italic;font-size:16px}
 </div>
 
 <div class="outils">
-  <button id="b-gratter">🔪 Gratter la peinture</button>
+  <button id="b-gratter" class="cache">🔪 Gratter la peinture</button>
   <button id="b-retourner">↻ Retourner le tableau</button>
 </div>
-<div class="indice" id="indice">Une toile sans valeur, dit le manifeste. Pourtant quelqu'un l'a fait traverser l'État sous escorte.</div>
+<div class="indice" id="indice">Une toile sans valeur, dit le manifeste. Pourtant quelqu'un l'a fait traverser l'État sous escorte. Peut-être faut-il la regarder sous un autre angle.</div>
 
 <div id="lecture" class="cache">
   <div class="feuillet">
@@ -249,9 +249,22 @@ planchette.addEventListener('click', () => {
   ouverte = true; indice.textContent = PHRASES[2] + ' Derrière, dans une cavité creusée dans la traverse : un rouleau de papier, noué d\'un fil rouge.';
   planchette.classList.add('ouverte'); trou.classList.add('visible');
 });
+/* Le grattage ne se débloque qu'après la lecture du rouleau (« J'ai tout gratté ») */
+const CLE_LU = 'eclipse-rouleau-lu';
+let lu = false; try { lu = localStorage.getItem(CLE_LU) === '1' || !!localStorage.getItem(CLE); } catch(e) {}
+if (new URLSearchParams(location.search).has('reset')) { lu = false; try { localStorage.removeItem(CLE_LU); } catch(e) {} }
+if (lu) bG.classList.remove('cache');
 rouleau.addEventListener('click', () => { if (ouverte) document.getElementById('lecture').classList.remove('cache'); });
-document.getElementById('b-fermer').onclick = () => document.getElementById('lecture').classList.add('cache');
-document.getElementById('lecture').addEventListener('click', e => { if (e.target.id === 'lecture') e.currentTarget.classList.add('cache'); });
+function fermerLecture(){
+  document.getElementById('lecture').classList.add('cache');
+  if (!lu){
+    lu = true; try { localStorage.setItem(CLE_LU, '1'); } catch(e) {}
+    bG.classList.remove('cache');
+    indice.textContent = '« Le visage refuse. J\'ai tout gratté. » Et si, sous la nuit bleue, la peinture cachait autre chose ?';
+  }
+}
+document.getElementById('b-fermer').onclick = fermerLecture;
+document.getElementById('lecture').addEventListener('click', e => { if (e.target.id === 'lecture') fermerLecture(); });
 </script>
 </body>
 </html>
